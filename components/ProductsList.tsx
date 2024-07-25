@@ -6,7 +6,8 @@ import { View, Text } from "./Themed";
 interface Product {
     id: number;
     name: string;
-    price: string;
+    quantity: string;
+    uri: string;
 }
 
 interface ProductsListProps {
@@ -16,7 +17,7 @@ export default function ProductsList({ products }: ProductsListProps) {
     const renderItem: ListRenderItem<Product> = ({ item }) => (
         <View style={styles.item}>
             <MonoText>{item.name}</MonoText>
-            <Text>{item.price}</Text>
+            <Text>{item.quantity}</Text>
         </View>
     );
 
