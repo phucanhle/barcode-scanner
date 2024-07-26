@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity, Image, TextInput } from "react-native";
 import { View, Text } from "./Themed";
 
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
 interface EditQuantity {
     productId: string;
     productName: string;
@@ -26,9 +28,12 @@ const EditQuantity: React.FC<EditQuantity> = ({ productId, productName, productQ
         }
     };
 
+    // Lấy href của hình ảnh
+    const href = API_URL?.concat(uri);
+
     return (
         <View style={styles.container}>
-            <Image source={{ uri: uri }} style={styles.image} />
+            <Image source={{ uri: href }} style={styles.image} />
             <View style={styles.textGroup}>
                 <Text style={styles.text}>{productId}</Text>
                 <Text style={styles.title}>{productName}</Text>

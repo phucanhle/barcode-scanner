@@ -1,9 +1,9 @@
 import { StyleSheet } from "react-native";
 
 import { Text, View } from "@/components/Themed";
-import { fetchProducts } from "@/database/database";
+import { fetchProducts } from "@/services/index";
 import { useState, useEffect } from "react";
-// import EditQuantity from "@/components/EditQuantity";
+
 export default function List() {
     const [productsData, setProductsData] = useState([]);
     useEffect(() => {

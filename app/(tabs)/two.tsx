@@ -3,65 +3,63 @@ import { FlatList, StyleSheet } from "react-native";
 import BarcodeScannerComponent from "@/components/BarcodeScanner";
 import { Text, View } from "@/components/Themed";
 import EditQuantity from "@/components/EditQuantity";
-import { fetchProducts } from "@/database/database";
-export default function BarcodeScanner() {
-    const initialProducts = [
-        {
-            productId: "123",
-            productName: "Canon EOS R100 + Lens 18-45mm",
-            productQuantity: 1,
-            uri: "https://cdn.vjshop.vn/may-anh/mirrorless/canon/canon-eos-r100/lens-18-45mm/canon-eos-r100-lens-18-45mm-500x500.jpg",
-        },
-        {
-            productId: "12354",
-            productName: "Sony ZV-E10 II (Black, Body Only)",
-            productQuantity: 1,
-            uri: "https://cdn.vjshop.vn/may-anh/mirrorless/sony/sony-zv-e10-ii/body-black/sony-zv-e10-ii-body-black-1-500x500.jpg",
-        },
-        {
-            productId: "2135",
-            productName: "Sony Alpha A6400 (Black)",
-            productQuantity: 1,
-            uri: "https://cdn.vjshop.vn/may-anh/mirrorless/sony/sony-alpha-a6400/sony-alpha-a6400-kit-16-50mm-black-chinh-hang3-500x500.jpg",
-        },
-        {
-            productId: "8332",
-            productName: "Sony Alpha A7S III",
-            productQuantity: 1,
-            uri: "https://cdn.vjshop.vn/may-anh/mirrorless/sony/sony-a7siii/sony-a7s-mark-iii-1-500x500.jpg",
-        },
-        {
-            productId: "83232",
-            productName: "Nikon Z6 III + Lens 24-70mm F/4S",
-            productQuantity: 1,
-            uri: "https://cdn.vjshop.vn/may-anh/mirrorless/nikon/nikon-z6-iii/nikon-z6-iii-37-500x500.jpg",
-        },
-    ];
-    const [products, setProducts] = useState(initialProducts);
+import { fetchProducts, increaseProductQuantity } from "@/services/index";
+
+import useStore from "@/services/store"; // Import store
+
+export default function ScannerScreen() {
+    const { reload, products, setReload, setProducts } = useStore();
 
     useEffect(() => {
-        fetchProducts();
-    }, []);
+        const loadProducts = async () => {
+            try {
+                const data = await fetchProducts();
+                setProducts(data); // Cập nhật state products trong store
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
+        if (reload) {
+            loadProducts();
+            setReload(false); // Cập nhật state reload trong store
+        }
+    }, [reload, setReload, setProducts]); // Dependencies cho useEffect
 
     const renderItem = ({ item }: any) => (
         <EditQuantity
-            key={item.productId}
-            productId={item.productId}
-            productName={item.productName}
-            productQuantity={item.productQuantity}
-            uri={item.uri}
+            productId={item.productid}
+            productName={item.name}
+            productQuantity={item.quantity}
+            uri={item.image}
         />
     );
 
+    const handleIncreaseQuantity = async (productId: string, curQuantity: number) => {
+        try {
+            const response = await increaseProductQuantity(productId, curQuantity + 1);
+            if (response) {
+                setReload(!reload);
+                console.log("Update successful.");
+            }
+        } catch (error) {
+            console.error("Update failed.");
+        }
+    };
+
     return (
         <View style={styles.container}>
-            <BarcodeScannerComponent />
+            <BarcodeScannerComponent
+                products={products}
+                reload={reload}
+                setReload={setReload}
+                handleIncreaseQuantity={handleIncreaseQuantity}
+            />
             <Text style={{ fontSize: 20, fontWeight: "600" }}>Danh sách sản phẩm</Text>
             <FlatList
                 style={styles.list}
                 data={products}
                 renderItem={renderItem}
-                keyExtractor={(item) => item.productId}
+                keyExtractor={(item: any) => item.productid}
             />
         </View>
     );
