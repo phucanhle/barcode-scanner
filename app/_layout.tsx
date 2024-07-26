@@ -12,6 +12,46 @@ import "react-native-reanimated";
 
 import { useColorScheme } from "@/components/useColorScheme";
 
+import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
+const toastConfig = {
+  /*
+    Overwrite 'success' type,
+    by modifying the existing `BaseToast` component
+  */
+  success: (props: any) => (
+    <BaseToast
+      {...props}
+      style={{ top: 20, borderLeftColor: "green", width: "100%" }}
+      contentContainerStyle={{ paddingHorizontal: 15 }}
+      text1Style={{
+        fontSize: 18,
+        fontWeight: "400",
+      }}
+      text2Style={{
+        fontSize: 16,
+        fontWeight: "400",
+      }}
+    />
+  ),
+  /*
+    Overwrite 'error' type,
+    by modifying the existing `ErrorToast` component
+  */
+  error: (props: any) => (
+    <ErrorToast
+      style={{ top: 20, borderLeftColor: "red", width: "100%" }}
+      contentContainerStyle={{ paddingHorizontal: 15 }}
+      text1Style={{
+        fontSize: 18,
+        fontWeight: "600",
+      }}
+      text2Style={{
+        fontSize: 16,
+        fontWeight: "400",
+      }}
+    />
+  ),
+};
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -61,6 +101,7 @@ function RootLayoutNav() {
           options={{ presentation: "modal", title: "Xuất file" }}
         />
       </Stack>
+      <Toast config={toastConfig} />
     </ThemeProvider>
   );
 }
